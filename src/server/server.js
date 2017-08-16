@@ -1,27 +1,27 @@
 //引入及初始化Express
-var express = require('express');
-var app = express();
+const express = require('express');
+const app = express();
 
 //引入socket.io
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 
 //引入自訂的相關config設定
 import config1 from '../config.js';
 
 //引入webpack
-var path = require('path');
-var config = require('../../webpack.config.js');
-var webpack = require('webpack');
-var webpackDevMiddleware = require('webpack-dev-middleware');
-var webpackHotMiddleware = require('webpack-hot-middleware');
-var compiler = webpack(config);
+const path = require('path');
+const config = require('../../webpack.config.js');
+const webpack = require('webpack');
+const webpackDevMiddleware = require('webpack-dev-middleware');
+const webpackHotMiddleware = require('webpack-hot-middleware');
+const compiler = webpack(config);
 app.use(webpackDevMiddleware(compiler, {noInfo:true,publicPath: config.output.publicPath}));
 app.use(webpackHotMiddleware(compiler));
 
 //引用Express中解析Post的body與cookie的模組
-var bodyParser = require('body-parser');
-var cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 
 
 
@@ -81,55 +81,55 @@ injectTapEventPlugin();
 
 
 //以下為React server side render的基本配備
-app.get('*',(req, res) => {
+app.get('*', (req, res) => {
 
   //設定Redux一開始的state，用來直接server side render資料
-	let initialState = {
-			userInfo:{
-				login:false
-			},
-			article: []
-	}
-	
-	axios.get(`http://localhost:3001/getArticle`)//axios在isomophic的情況中須加上完整域名
-		.then(response => {
-			//把ajax後的資料放入上面的initialState，並給server做render
-			initialState.article = response.data; 
-			const store = configureStore(initialState);
+  let initialState = {
+    userInfo: {
+      login: false
+    },
+    article: []
+  };
 
-     //Material UI 在server side render時所要求
-			const muiTheme = getMuiTheme({  
-				userAgent: req.headers['user-agent'],
-			});
+  axios.get(`http://localhost:3001/getArticle`) //axios在isomophic的情況中須加上完整域名
+    .then(response => {
+      //把ajax後的資料放入上面的initialState，並給server做render
+      initialState.article = response.data;
+      const store = configureStore(initialState);
+
+      //Material UI 在server side render時所要求
+      const muiTheme = getMuiTheme({
+        userAgent: req.headers['user-agent'],
+      });
 
       //server 根據http status code決定要做什麼處理
-			match({routes, location: req.url}, (error, redirectLocation, renderProps) => {
-				if (error) {
-					res.status(500).send(error.message);
-				} else if (redirectLocation) {
-					res.redirect(302, redirectLocation.pathname + redirectLocation.search);
-				} else if (renderProps) {
-					//使用renderToString 把React component轉為string以做Server side render
-					const content = renderToString(
+      match({routes, location: req.url}, (error, redirectLocation, renderProps) => {
+        if (error) {
+          res.status(500).send(error.message);
+        } else if (redirectLocation) {
+          res.redirect(302, redirectLocation.pathname + redirectLocation.search);
+        } else if (renderProps) {
+          //使用renderToString 把React component轉為string以做Server side render
+          const content = renderToString(
 						<Provider store={store}>
 							<MuiThemeProvider muiTheme={muiTheme}>
 								<RouterContext {...renderProps} />
 							</MuiThemeProvider>
 						</Provider>
-					);
-					let state = store.getState();
-					let page = renderFullPage(content, state); //把html與state做結合
-					return res.status(200).send(page); //把我們的html送出到client端
-				} else {
-					res.status(404).send('Not Found');
-				}
-			});
-		})
-		.catch(err => {
-			console.log(err);
-			res.end(err);
-		});
-})
+          );
+          let state = store.getState();
+          let page = renderFullPage(content, state); //把html與state做結合
+          return res.status(200).send(page); //把我們的html送出到client端
+        } else {
+          res.status(404).send('Not Found');
+        }
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      res.end(err);
+    });
+});
 
 const renderFullPage = (html, preloadedState) => (`
 <!DOCTYPE html>
@@ -148,19 +148,19 @@ const renderFullPage = (html, preloadedState) => (`
 	</script>
 </head>
 <body>
-<div id="fb-root"></div>
+  <div id="fb-root"></div>
 
   <div id="app">${html}</div>  
   <script>
   window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\x3c')}
-   </script>
+  </script>
   <script src="bundle.js"></script>
 </body>
 </html>
 `
 );
 
-var port = 3001;
+const port = process.env.PORT || 3001;
 
 http.listen(port,'127.0.0.1', function(error) {
   if (error) throw error;
