@@ -23,6 +23,7 @@ exports.User = mongoose.model('users', new mongoose.Schema({
 	hobby: String,
 	birthday: String
 }));
+
 //發表文章
 exports.Post = mongoose.model('articles', new mongoose.Schema({
 	posterAccount: String,

@@ -3,7 +3,7 @@ import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import MainNavBtn from 'material-ui/svg-icons/action/toc';
-import { browserHistory } from 'react-router';
+import {browserHistory} from 'react-router';
 
 export default class Navbar extends React.Component {
 
@@ -17,18 +17,18 @@ export default class Navbar extends React.Component {
   toArticle = () => {
     browserHistory.push('/main')
     this.setState({open: false});
-  }
+  };
 
-    toa = () => {
-      browserHistory.push('/chatroom')
-      this.setState({open: false});
-    }
+  toa = () => {
+    browserHistory.push('/chatroom')
+    this.setState({open: false});
+  };
 
   render() {
     return (
       <div>
         <IconButton tooltip="主選單" onTouchTap={this.handleToggle}>
-          <MainNavBtn />
+          <MainNavBtn/>
         </IconButton>
         <Drawer
           docked={false}

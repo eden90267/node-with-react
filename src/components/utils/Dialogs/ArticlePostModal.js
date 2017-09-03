@@ -1,9 +1,8 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import RaisedButton from 'material-ui/RaisedButton';
 import axios from 'axios';
-import { findDOMNode } from 'react-dom';
+import {findDOMNode} from 'react-dom';
 
 const style = {
   contentStyle: {
@@ -39,10 +38,11 @@ const style = {
   fileInput: {
     display: 'none'
   }
-}
+};
 
 
 export default class ArticleModal extends React.Component {
+
   constructor() {
     super();
     this.state = {
@@ -50,9 +50,11 @@ export default class ArticleModal extends React.Component {
       tag: '',
     }
   }
+
   titleInput = (e) => {
-    this.setState({ title: e.target.value });
-  }
+    this.setState({title: e.target.value});
+  };
+
   handleClose = () => {
     this.props.context.setState({articlePostModal: false});
   };
@@ -62,44 +64,45 @@ export default class ArticleModal extends React.Component {
     this.props.context.setState({articlePostModal: false});
     this.props.context.setState({loading: true});
     axios.post('/postArticle', {
-        name: this.props.user.name,
-        account: this.props.user.account,
-        content: this.refs.div1.innerHTML,
-        title: this.state.title,
-        avatar: this.props.user.avatar,
-        tag: this.state.tag
+      name: this.props.user.name,
+      account: this.props.user.account,
+      content: this.refs.div1.innerHTML,
+      title: this.state.title,
+      avatar: this.props.user.avatar,
+      tag: this.state.tag
+    })
+      .then((response) => {
+        this.props.context.setState({loading: false});
+        context.setState({dialog: true});
+        context.setState({dialogText: response.data});
+        socket.emit('postArticle', {data: 'test'});
+        location.reload();//有時會因為Lag關係，發表的client在Reducer產生兩個文章
       })
-    .then((response) => {
-      this.props.context.setState({loading: false});
-      context.setState({ dialog:true })
-      context.setState({ dialogText:response.data })
-      socket.emit('postArticle',{data:'test'});
-      location.reload();//有時會因為Lag關係，發表的client在Reducer產生兩個文章
-    })
-    .catch((e) => {
-      alert(e);
-      this.props.context.setState({loading: false});
-    })
-  }
-  componentDidMount () {
+      .catch((e) => {
+        alert(e);
+        this.props.context.setState({loading: false});
+      })
+  };
 
-    findDOMNode(this.refs.div1).addEventListener('keydown',(e) => {
+  componentDidMount() {
+
+    findDOMNode(this.refs.div1).addEventListener('keydown', (e) => {
       console.log(this.refs.div1.innerHTML)
-      this.setState({ content: this.refs.div1.innerHTML })
+      this.setState({content: this.refs.div1.innerHTML})
     });
     const context = this;
-    findDOMNode(this.refs.fileInput).addEventListener("change",() => {
+    findDOMNode(this.refs.fileInput).addEventListener("change", () => {
       if (findDOMNode(this.refs.fileInput).files && findDOMNode(this.refs.fileInput).files[0]) {
-        var FR= new FileReader();
-        FR.onload = function(e) {
+        var FR = new FileReader();
+        FR.onload = function (e) {
           let base64 = e.target.result.replace(/^data:image\/(png|jpg);base64,/, "");
 
           var xhttp = new XMLHttpRequest();
-          xhttp.open('POST','https://api.imgur.com/3/image',true)
+          xhttp.open('POST', 'https://api.imgur.com/3/image', true)
           xhttp.setRequestHeader("Content-type", "application/json");
           xhttp.setRequestHeader("Authorization", "Client-ID b50a7351eee91f0");
           xhttp.send(JSON.stringify({'image': base64}));
-          xhttp.onreadystatechange = function() {
+          xhttp.onreadystatechange = function () {
             if (xhttp.readyState == 4 && xhttp.status == 200) {
               var para = document.createElement("img");
               para.height = 150;
@@ -109,12 +112,14 @@ export default class ArticleModal extends React.Component {
           };
         };
         FR.readAsDataURL(findDOMNode(this.refs.fileInput).files[0]);
-      };
+      }
     });
   }
+
   fileBtn() {
     findDOMNode(this.refs.fileInput).click();
   }
+
   render() {
     const actions = [
       <FlatButton
@@ -139,24 +144,24 @@ export default class ArticleModal extends React.Component {
           contentStyle={style.contentStyle}
           bodyStyle={style.bodyStyle}
         >
-        <div style={{height: '600px'}}>
-          <input
-            style={style.title}
-            maxLength={15}
-            placeholder="請輸入標題"
-            onChange={(e) => this.titleInput(e)} >
-          </input>
-          <div>
-            <button onClick={() => this.fileBtn()} style={style.picBtn} />
-            <input style={style.fileInput} id="file-upload" ref="fileInput" type='file' />
+          <div style={{height: '600px'}}>
+            <input
+              style={style.title}
+              maxLength={15}
+              placeholder="請輸入標題"
+              onChange={(e) => this.titleInput(e)}>
+            </input>
+            <div>
+              <button onClick={() => this.fileBtn()} style={style.picBtn}/>
+              <input style={style.fileInput} id="file-upload" ref="fileInput" type='file'/>
+            </div>
+            <div
+              ref="div1"
+              contentEditable="true"
+              placeholder="請輸入文章內容"
+              style={style.textarea}>
+            </div>
           </div>
-          <div
-            ref="div1"
-            contentEditable="true"
-            placeholder="請輸入文章內容"
-            style={style.textarea} >
-          </div>
-        </div>
         </Dialog>
       </div>
     );

@@ -15,7 +15,7 @@ const style = {
     color: 'gray',
     textAlign: 'center'
   }
-}
+};
 
 const iconButtonElement = (
   <IconButton
@@ -23,31 +23,31 @@ const iconButtonElement = (
     tooltip="more"
     tooltipPosition="bottom-left"
   >
-    <MoreVertIcon color={grey400} />
+    <MoreVertIcon color={grey400}/>
   </IconButton>
 );
 
 const ChatList = (props) => (
   <div>
-  {props.msg.map((i, idx) => (
-    <List key={idx}>
-      <ListItem
-        leftAvatar = {
-          <div >
-            <Avatar src={i.avatar} />
-            <div style={style.author}>{i.name}</div>
+    {props.msg.map((i, idx) => (
+      <List key={idx}>
+        <ListItem
+          leftAvatar={
+            <div>
+              <Avatar src={i.avatar}/>
+              <div style={style.author}>{i.name}</div>
+            </div>
+          }>
+          <div>
+            <div>{i.content}</div>
+            <div style={{position: 'relative', top: '0px', float: 'right'}}>{i.date}</div>
           </div>
-        }>
-        <div>
-          <div >{i.content}</div>
-          <div style={{position: 'relative', top: '0px', float: 'right'}}>{i.date}</div>
-        </div>
-      </ListItem>
+        </ListItem>
 
-     <Divider inset={true} />
-    </List>
-  ))
-  }
+        <Divider inset={true}/>
+      </List>
+    ))
+    }
   </div>
 );
 

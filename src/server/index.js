@@ -1,4 +1,4 @@
-//讓Node.js的程式碼compile
+// 讓Node.js的程式碼compile
 
 require('babel-register')({
   presets: ['es2015', 'react', 'stage-0']
